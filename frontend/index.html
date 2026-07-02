@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>LiftLog • Fitness Dashboard</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Animated Background -->
+    <div class="background">
+        <div class="blob blob1"></div>
+        <div class="blob blob2"></div>
+        <div class="blob blob3"></div>
+    </div>
+
+    <div class="app">
+
+        <!-- =========================
+             NAVBAR
+        ========================== -->
+
+        <nav class="navbar">
+
+            <div class="logo">
+
+                <div class="logo-icon">
+                    <i class="fa-solid fa-dumbbell"></i>
+                </div>
+
+                <div>
+
+                    <h2>LiftLog</h2>
+
+                    <span>
+                        Fitness Dashboard
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="nav-actions">
+
+                <!-- Search -->
+
+                <div class="search-box">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input
+                        type="text"
+                        id="searchWorkout"
+                        placeholder="Search workout..."
+                    >
+
+                </div>
+
+                <!-- Theme -->
+
+                <button
+                    id="themeToggle"
+                    class="theme-btn"
+                    title="Toggle Theme"
+                >
+
+                    <i class="fa-solid fa-moon"></i>
+
+                </button>
+
+            </div>
+
+        </nav>
+
+        <!-- =========================
+             HERO
+        ========================== -->
+
+        <section class="hero">
+
+            <div class="hero-left">
+
+                <span class="badge">
+
+                    💪 Stay Consistent
+
+                </span>
+
+                <h1>
+
+                    Track Every Lift.
+                    <br>
+
+                    Beat Yesterday.
+
+                </h1>
+
+                <p>
+
+                    LiftLog helps you record every workout,
+                    monitor your progress, and stay motivated
+                    with a beautiful fitness dashboard.
+
+                </p>
+
+                <div class="hero-buttons">
+
+                    <button
+                        class="primary-btn"
+                        id="scrollToForm"
+                    >
+
+                        <i class="fa-solid fa-plus"></i>
+
+                        Add Workout
+
+                    </button>
+
+                    <button
+                        class="secondary-btn"
+                    >
+
+                        <i class="fa-solid fa-chart-line"></i>
+
+                        View Progress
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- Hero Right -->
+
+            <div class="hero-right">
+
+                <div class="hero-card">
+
+                    <div class="hero-card-top">
+
+                        <span>
+
+                            Weekly Goal
+
+                        </span>
+
+                        <i class="fa-solid fa-fire"></i>
+
+                    </div>
+
+                    <h2>
+
+                        5 / 7
+
+                    </h2>
+
+                    <p>
+
+                        Workout Days Completed
+
+                    </p>
+
+                    <div class="progress-bar">
+
+                        <div class="progress-fill"></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+                <!-- =========================
+             DASHBOARD STATS
+        ========================== -->
+
+        <section class="stats-section">
+
+            <div class="stats-grid">
+
+                <!-- Total Workouts -->
+
+                <div class="stat-card">
+
+                    <div class="stat-icon blue">
+
+                        <i class="fa-solid fa-dumbbell"></i>
+
+                    </div>
+
+                    <div class="stat-info">
+
+                        <span>Total Workouts</span>
+
+                        <h2 id="totalWorkouts">0</h2>
+
+                        <small>All workout entries</small>
+
+                    </div>
+
+                </div>
+
+                <!-- Total Weight -->
+
+                <div class="stat-card">
+
+                    <div class="stat-icon orange">
+
+                        <i class="fa-solid fa-fire"></i>
+
+                    </div>
+
+                    <div class="stat-info">
+
+                        <span>Total Weight Lifted</span>
+
+                        <h2 id="totalWeight">0 kg</h2>
+
+                        <small>Weight × reps</small>
+
+                    </div>
+
+                </div>
+
+                <!-- Today's Workouts -->
+
+                <div class="stat-card">
+
+                    <div class="stat-icon green">
+
+                        <i class="fa-solid fa-calendar-check"></i>
+
+                    </div>
+
+                    <div class="stat-info">
+
+                        <span>Today's Workouts</span>
+
+                        <h2 id="todayWorkout">0</h2>
+
+                        <small>Logged today</small>
+
+                    </div>
+
+                </div>
+
+                <!-- Weekly Streak -->
+
+                <div class="stat-card">
+
+                    <div class="stat-icon purple">
+
+                        <i class="fa-solid fa-bolt"></i>
+
+                    </div>
+
+                    <div class="stat-info">
+
+                        <span>Current Streak</span>
+
+                        <h2 id="streak">0 Days</h2>
+
+                        <small>Keep it going 🚀</small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- =========================
+             ADD WORKOUT
+        ========================== -->
+
+        <section
+            class="glass-card form-section"
+            id="addWorkoutSection"
+        >
+
+            <div class="section-title">
+
+                <div>
+
+                    <h2>
+
+                        <i class="fa-solid fa-plus-circle"></i>
+
+                        Add New Workout
+
+                    </h2>
+
+                    <p>
+
+                        Record today's training session.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <form id="workoutForm">
+
+                <div class="form-group">
+
+                    <label>
+
+                        Exercise
+
+                    </label>
+
+                    <input
+                        type="text"
+                        id="exercise"
+                        placeholder="Bench Press"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>
+
+                        Weight (kg)
+
+                    </label>
+
+                    <input
+                        type="number"
+                        id="weight"
+                        placeholder="80"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>
+
+                        Reps
+
+                    </label>
+
+                    <input
+                        type="number"
+                        id="reps"
+                        placeholder="8"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>
+
+                        Date
+
+                    </label>
+
+                    <input
+                        type="date"
+                        id="date"
+                        required
+                    >
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="submit-btn"
+                >
+
+                    <i class="fa-solid fa-plus"></i>
+
+                    Add Workout
+
+                </button>
+
+            </form>
+
+        </section>
+
+                <!-- =========================
+             WORKOUT HISTORY
+        ========================== -->
+
+        <section class="history-section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+
+                        <i class="fa-solid fa-chart-line"></i>
+
+                        Workout History
+
+                    </h2>
+
+                    <p>
+
+                        Every workout you've logged appears here.
+
+                    </p>
+
+                </div>
+
+                <div class="history-actions">
+
+                    <button
+                        id="refreshBtn"
+                        class="outline-btn"
+                    >
+
+                        <i class="fa-solid fa-rotate"></i>
+
+                        Refresh
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- Loading State -->
+
+            <div
+                id="loading"
+                class="loading-state hidden"
+            >
+
+                <div class="spinner"></div>
+
+                <p>
+
+                    Loading your workouts...
+
+                </p>
+
+            </div>
+
+            <!-- Error State -->
+
+            <div
+                id="error"
+                class="error-state hidden"
+            >
+
+                <i class="fa-solid fa-triangle-exclamation"></i>
+
+                <h3>
+
+                    Something went wrong
+
+                </h3>
+
+                <p>
+
+                    Unable to connect to the LiftLog server.
+
+                </p>
+
+                <button
+                    id="retryBtn"
+                    class="primary-btn"
+                >
+
+                    Try Again
+
+                </button>
+
+            </div>
+
+            <!-- Empty State -->
+
+            <div
+                id="emptyState"
+                class="empty-state hidden"
+            >
+
+                <div class="empty-icon">
+
+                    <i class="fa-solid fa-dumbbell"></i>
+
+                </div>
+
+                <h2>
+
+                    No Workouts Yet
+
+                </h2>
+
+                <p>
+
+                    Start your fitness journey by logging your first workout.
+
+                </p>
+
+                <button
+                    id="emptyAddBtn"
+                    class="primary-btn"
+                >
+
+                    <i class="fa-solid fa-plus"></i>
+
+                    Add First Workout
+
+                </button>
+
+            </div>
+
+            <!-- Workout Grid -->
+
+            <div
+                id="workoutList"
+                class="workout-grid"
+            >
+
+                <!-- Workout cards generated dynamically -->
+
+            </div>
+
+        </section>
+
+                <!-- =========================
+             EDIT WORKOUT MODAL
+        ========================== -->
+
+        <div
+            id="editModal"
+            class="modal hidden"
+        >
+
+            <div class="modal-overlay"></div>
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h2>
+
+                        <i class="fa-solid fa-pen-to-square"></i>
+
+                        Edit Workout
+
+                    </h2>
+
+                    <button
+                        id="closeModal"
+                        class="close-btn"
+                    >
+
+                        <i class="fa-solid fa-xmark"></i>
+
+                    </button>
+
+                </div>
+
+                <form id="editForm">
+
+                    <div class="form-group">
+
+                        <label>
+
+                            Exercise
+
+                        </label>
+
+                        <input
+                            type="text"
+                            id="editExercise"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>
+
+                            Weight (kg)
+
+                        </label>
+
+                        <input
+                            type="number"
+                            id="editWeight"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>
+
+                            Reps
+
+                        </label>
+
+                        <input
+                            type="number"
+                            id="editReps"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>
+
+                            Date
+
+                        </label>
+
+                        <input
+                            type="date"
+                            id="editDate"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="modal-actions">
+
+                        <button
+                            type="button"
+                            id="cancelEdit"
+                            class="outline-btn"
+                        >
+
+                            Cancel
+
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="primary-btn"
+                        >
+
+                            <i class="fa-solid fa-floppy-disk"></i>
+
+                            Save Changes
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        <!-- =========================
+             TOAST NOTIFICATION
+        ========================== -->
+
+        <div
+            id="toast"
+            class="toast"
+        >
+
+            <div class="toast-icon">
+
+                <i class="fa-solid fa-circle-check"></i>
+
+            </div>
+
+            <div class="toast-content">
+
+                <h4 id="toastTitle">
+
+                    Success
+
+                </h4>
+
+                <p id="toastMessage">
+
+                    Workout updated successfully.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- JavaScript -->
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
