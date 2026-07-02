@@ -7,7 +7,7 @@
    Backend URL
 ------------------------------ */
 
-const BACKEND_URL = "http://localhost:3000";
+const BACKEND_URL = "https://liftlog-30a3.onrender.com";
 
 /* ------------------------------
    Global State
