@@ -1,0 +1,250 @@
+// LiftLog data model.
+//
+// Conventions
+//  - Weights are stored in KILOGRAMS (Decimal) and converted for display using User.weightUnit.
+//  - Every user-owned row is reachable from a userId; all queries MUST be scoped by it
+//    (enforced in src/server/queries and src/actions, never trusting client-supplied ids).
+//  - Derived values (volume, PRs, streaks) are computed from SetLog, never stored.
+//  - Table CHECK constraints live in the migration SQL (Prisma cannot express them).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ───────────────────────── Auth (Better Auth core tables) ─────────────────────────
+
+model User {
+  id            String   @id
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // LiftLog preferences (declared as Better Auth additionalFields)
+  weightUnit      WeightUnit @default(KG)
+  timezone        String     @default("UTC")
+  goalDaysPerWeek Int        @default(4)
+
+  sessions  Session[]
+  accounts  Account[]
+  exercises Exercise[]
+  routines  Routine[]
+  workouts  WorkoutSession[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String? // scrypt hash (never plaintext)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verifications")
+}
+
+// ───────────────────────────── Domain ─────────────────────────────
+
+enum WeightUnit {
+  KG
+  LB
+}
+
+enum MuscleGroup {
+  CHEST
+  BACK
+  SHOULDERS
+  BICEPS
+  TRICEPS
+  FOREARMS
+  QUADS
+  HAMSTRINGS
+  GLUTES
+  CALVES
+  CORE
+  FULL_BODY
+  CARDIO
+  OTHER
+}
+
+enum Equipment {
+  BARBELL
+  DUMBBELL
+  MACHINE
+  CABLE
+  BODYWEIGHT
+  KETTLEBELL
+  BAND
+  OTHER
+}
+
+enum SessionSource {
+  LIVE
+  MANUAL
+  LEGACY_IMPORT
+}
+
+/// NOTE: FKs from routine_exercises/session_exercises use NoAction (checked at end of statement),
+/// so deleting a user can cascade through their custom exercises AND their history in one statement,
+/// while deleting an exercise that is still referenced is rejected.
+/// userId = null  → global library exercise (read-only for users)
+/// userId = <id>  → custom exercise owned by that user
+model Exercise {
+  id             String      @id @default(cuid())
+  userId         String?
+  user           User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name           String
+  /// lower-cased, whitespace-collapsed name used for matching and uniqueness
+  normalizedName String
+  muscleGroup    MuscleGroup @default(OTHER)
+  equipment      Equipment   @default(OTHER)
+  instructions   String?
+  createdAt      DateTime    @default(now())
+
+  routineExercises RoutineExercise[]
+  sessionExercises SessionExercise[]
+
+  @@unique([userId, normalizedName])
+  @@index([muscleGroup])
+  @@map("exercises")
+}
+
+model Routine {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  exercises RoutineExercise[]
+  sessions  WorkoutSession[]
+
+  @@index([userId])
+  @@map("routines")
+}
+
+model RoutineExercise {
+  id             String   @id @default(cuid())
+  routineId      String
+  routine        Routine  @relation(fields: [routineId], references: [id], onDelete: Cascade)
+  exerciseId     String
+  exercise       Exercise @relation(fields: [exerciseId], references: [id], onDelete: NoAction)
+  position       Int
+  targetSets     Int      @default(3)
+  targetReps     Int      @default(10)
+  targetWeightKg Decimal? @db.Decimal(7, 2)
+
+  @@unique([routineId, position])
+  @@index([exerciseId])
+  @@map("routine_exercises")
+}
+
+model WorkoutSession {
+  id        String        @id @default(cuid())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  routineId String?
+  routine   Routine?      @relation(fields: [routineId], references: [id], onDelete: SetNull)
+  name      String
+  startedAt DateTime
+  /// null while a live session is in progress
+  endedAt   DateTime?
+  notes     String?
+  source    SessionSource @default(MANUAL)
+  createdAt DateTime      @default(now())
+
+  exercises SessionExercise[]
+
+  @@index([userId, startedAt(sort: Desc)])
+  @@index([routineId])
+  @@map("workout_sessions")
+}
+
+model SessionExercise {
+  id         String         @id @default(cuid())
+  sessionId  String
+  session    WorkoutSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  exerciseId String
+  exercise   Exercise       @relation(fields: [exerciseId], references: [id], onDelete: NoAction)
+  position   Int
+
+  sets SetLog[]
+
+  @@unique([sessionId, position])
+  @@index([exerciseId])
+  @@map("session_exercises")
+}
+
+model SetLog {
+  id                String          @id @default(cuid())
+  sessionExerciseId String
+  sessionExercise   SessionExercise @relation(fields: [sessionExerciseId], references: [id], onDelete: Cascade)
+  setNumber         Int
+  weightKg          Decimal         @db.Decimal(7, 2)
+  reps              Int
+  /// rate of perceived exertion, 1.0–10.0 (optional)
+  rpe               Decimal?        @db.Decimal(3, 1)
+  completedAt       DateTime
+  /// id of the row in the legacy SQLite `workouts` table (idempotent re-imports)
+  legacyId          Int?            @unique
+
+  @@unique([sessionExerciseId, setNumber])
+  @@map("set_logs")
+}
+
+/// Better Auth rate-limit counters (database storage works across serverless instances).
+model RateLimit {
+  id          String @id
+  key         String @unique
+  count       Int
+  lastRequest BigInt
+
+  @@map("rate_limits")
+}
