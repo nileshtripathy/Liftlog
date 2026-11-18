@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Design tokens. Dark is the default theme (see ThemeProvider); light is a first-class palette. */
+:root {
+  --radius: 0.75rem;
+  --background: oklch(0.985 0.003 106);
+  --foreground: oklch(0.19 0.01 106);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.19 0.01 106);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.19 0.01 106);
+  --primary: oklch(0.21 0.01 106);
+  --primary-foreground: oklch(0.985 0.003 106);
+  --secondary: oklch(0.955 0.005 106);
+  --secondary-foreground: oklch(0.25 0.01 106);
+  --muted: oklch(0.955 0.005 106);
+  --muted-foreground: oklch(0.48 0.01 106);
+  --accent: oklch(0.92 0.09 125);
+  --accent-foreground: oklch(0.3 0.07 125);
+  --destructive: oklch(0.55 0.22 27);
+  --border: oklch(0.9 0.005 106);
+  --input: oklch(0.88 0.005 106);
+  --ring: oklch(0.58 0.15 125);
+}
+
+.dark {
+  --background: oklch(0.145 0.005 106);
+  --foreground: oklch(0.97 0.005 106);
+  --card: oklch(0.185 0.006 106);
+  --card-foreground: oklch(0.97 0.005 106);
+  --popover: oklch(0.185 0.006 106);
+  --popover-foreground: oklch(0.97 0.005 106);
+  --primary: oklch(0.89 0.19 125);
+  --primary-foreground: oklch(0.2 0.04 125);
+  --secondary: oklch(0.235 0.006 106);
+  --secondary-foreground: oklch(0.97 0.005 106);
+  --muted: oklch(0.235 0.006 106);
+  --muted-foreground: oklch(0.7 0.01 106);
+  --accent: oklch(0.28 0.04 125);
+  --accent-foreground: oklch(0.95 0.06 125);
+  --destructive: oklch(0.7 0.19 22);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.89 0.19 125 / 55%);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
