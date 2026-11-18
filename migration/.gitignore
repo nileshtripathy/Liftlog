@@ -1,0 +1,6 @@
+# Live exports and DB backups contain personal workout data: keep them local.
+exports/*
+!exports/.gitkeep
+backups/*.db
+!backups/.gitkeep
+!backups/MANIFEST.txt
